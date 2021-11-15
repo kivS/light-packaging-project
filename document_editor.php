@@ -1,3 +1,18 @@
+<?php
+$db = new SQLite3(__DIR__ . '/db.sqlite3');
+
+// get the document from document_id passed by GET
+$q = $db->prepare('
+    SELECT document.*, project.name AS project_name, project.uid AS project_id 
+    FROM document JOIN project ON project.id = document.project_id 
+    WHERE document.uid = :document_id
+');
+$q->bindValue(':document_id', $_GET['document_id']);
+$result = $q->execute();
+$document = $result->fetchArray(SQLITE3_ASSOC);
+
+
+?>
 <div class="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
 
     <div>
@@ -33,7 +48,7 @@
                         <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                         </svg>
-                        <a href="/projects?project_id=iphone-22" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">Iphone 22</a>
+                        <a href="/projects?project_id=<?php echo $document['project_id'] ?>" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"><?php echo $document['project_name'] ?></a>
                     </div>
                 </li>
 
@@ -43,7 +58,7 @@
     <div class="mt-2 md:flex md:items-center md:justify-between">
         <div class="flex-1 min-w-0">
             <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-                Instruction Manual
+                <?php echo $document['name']; ?>
             </h2>
 
             <a href="http://project-packing.local/company-x/iphone-22" class="font-medium text-blue-600 hover:text-blue-500">
