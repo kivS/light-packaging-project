@@ -1,4 +1,9 @@
 
+## Dependencies
+
+- [QR code generator](https://github.com/davidshimjs/qrcodejs)
+
+
 
 - Generate tailwindcss 
 ```bash

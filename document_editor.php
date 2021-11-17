@@ -65,11 +65,43 @@ $document = $result->fetchArray(SQLITE3_ASSOC);
                 View Project
             </a>
 
-            <form action="#">
-                <textarea name="text" id="" cols="30" rows="10" placeholder="your text here..."></textarea>
-                <button type=" button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">save</button>
+            <form action="" @submit.prevent="saveText">
+                <textarea name="text" id="text" cols="30" rows="10" placeholder="your text here..."><?php echo $document['text']; ?></textarea>
+                <button type="submit" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">save</button>
             </form>
         </div>
 
     </div>
+
+    <script>
+        async function saveText(e) {
+
+            let text = e.target.querySelector('#text').value
+
+            let r = await fetch('/api/save-text', {
+                method: 'post',
+                body: JSON.stringify({
+                    'text': text,
+                    'document_uid': '<?php echo $document['uid'] ?>'
+                }),
+
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization': auth
+                },
+
+            }).catch(err => {
+                console.error(err)
+            })
+
+            r.json().then(data => {
+                console.log(data)
+                if (data.status == 'ok') {
+                    // window.location.href = `/editor?document_id=${data.document_id}`
+                }
+            })
+
+
+        }
+    </script>
 </div>

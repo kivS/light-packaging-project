@@ -23,6 +23,7 @@ while ($row = $results->fetchArray()) {
     ];
 };
 
+$company_public_url = 'http://project-packing.local/company-Y/'
 
 ?>
 
@@ -120,6 +121,25 @@ while ($row = $results->fetchArray()) {
         <button @click="newProjectSlideOverOpen = true" type="button" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             New Project
         </button>
+
+        <div class="p-4" id="qrcode"></div>
+        <script type="text/javascript">
+            // load script file async for /assets/qrcode.min.js with callback
+            let script = document.createElement('script');
+            script.src = '/assets/qrcode.min.js';
+            script.async = true;
+            script.onload = function() {
+                let qrcode = new QRCode("qrcode", {
+                    text: <?php echo json_encode($company_public_url); ?>,
+                    width: 300,
+                    height: 300,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            };
+            document.getElementsByTagName('head')[0].appendChild(script);
+        </script>
 
     </div>
 

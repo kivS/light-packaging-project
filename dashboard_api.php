@@ -75,6 +75,24 @@ switch ($_SERVER['DOCUMENT_URI']) {
 
         break;
 
+    case '/api/save-text':
+        $data = json_decode(
+            file_get_contents('php://input'),
+            true
+        );
+
+        $q = $db->prepare('UPDATE document SET text = :text WHERE uid = :uid');
+        $q->bindValue(':uid', $data['document_uid']);
+        $q->bindValue(':text', $data['text']);
+        $q->execute(); 
+
+        echo json_encode(
+            [
+                'status' => 'ok'
+            ]
+        );
+
+        break;
         
     default:
         header('HTTP/1.1 404 Not Found');
