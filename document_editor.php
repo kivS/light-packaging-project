@@ -78,7 +78,7 @@ $document = $result->fetchArray(SQLITE3_ASSOC);
 
             let text = e.target.querySelector('#text').value
 
-            let r = await fetch('/api/save-text', {
+            let r = await fetch('/api/save-document-text', {
                 method: 'post',
                 body: JSON.stringify({
                     'text': text,

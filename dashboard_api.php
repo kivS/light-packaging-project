@@ -75,7 +75,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
 
         break;
 
-    case '/api/save-text':
+    case '/api/save-document-text':
         $data = json_decode(
             file_get_contents('php://input'),
             true
