@@ -12,6 +12,11 @@ $result = $q->execute();
 $document = $result->fetchArray(SQLITE3_ASSOC);
 
 
+if(!$document) {
+    die('<div class="text-center p-4"> Document not found </div>');
+}
+
+
 ?>
 <div class="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
 

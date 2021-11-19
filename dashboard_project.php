@@ -8,6 +8,10 @@ $q->bindValue(':uid', $_GET['project_id']);
 $result = $q->execute();
 $project = $result->fetchArray(SQLITE3_ASSOC);
 
+if(!$project) {
+    die('<div class="text-center p-4"> Project not found </div>');
+}
+
 
 // Get the documents of this project
 $q = $db->prepare('SELECT * FROM document WHERE project_id = :project_id');
