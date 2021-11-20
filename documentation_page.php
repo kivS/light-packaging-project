@@ -1,4 +1,7 @@
 <?php
+
+require_once('functions.php');
+
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
 
 
@@ -8,8 +11,8 @@ switch ($_SERVER['DOCUMENT_URI']) {
         break;
 
 
-    // match path and remove company, project and document from the path
-    // e.g. /company/project<optional>/document<optional>
+        // match path and remove company, project and document from the path
+        // e.g. /company/project<optional>/document<optional>
     case (preg_match('/^\/(?<company>[a-zA-Z0-9-_]+)\/?(?<project>[a-zA-Z0-9-_]*)\/?(?<document>[a-zA-Z0-9-_]*)\/?$/', $_SERVER['DOCUMENT_URI'], $matches) ? true : false):
 
         $company_slug = $matches['company'] ?? null;
@@ -23,13 +26,21 @@ switch ($_SERVER['DOCUMENT_URI']) {
         $company = $result->fetchArray(SQLITE3_ASSOC);
 
         // prepare company project query
-        $query_project = $db->prepare('SELECT * FROM project WHERE slug = :project_slug AND user_id = :user_id');   
+        $query_project = $db->prepare('SELECT * FROM project WHERE slug = :project_slug AND user_id = :user_id LIMIT 1');
         $query_project->bindValue(':project_slug', $project_slug);
         $query_project->bindValue(':user_id', $company['id']);
-        
+
 
         if ($company_slug && $project_slug && $document_slug) {
+
             $page = 'company_project_and_document';
+
+            // get document info
+            $q = $db->prepare('SELECT * FROM document WHERE slug = :document_slug AND project_id = (SELECT id from project WHERE slug = :project_slug) LIMIT 1');
+            $q->bindValue(':document_slug', $document_slug);
+            $q->bindValue(':project_slug', $project_slug);
+            $result = $q->execute();
+            $document = $result->fetchArray(SQLITE3_ASSOC);
 
         } elseif ($company_slug && $project_slug) {
             $page = 'company_and_project';
@@ -71,46 +82,61 @@ switch ($_SERVER['DOCUMENT_URI']) {
 ?>
 
 <?php if ($page == 'home') { ?>
-<div>
-    <h1>home page</h1>
-</div>
-<?php }; ?>
-
-<?php if($page == 'company_and_project'){ ?>
-<div>
-    <h1>company and project page</h1>
-    <h2><?= $company['name'] ?></h2>
-    <h3>Project name: <?= $project['name'] ?></h3>
-
-    <?php foreach ($documents as $document) { ?>
-    <div class="">
-        <h4><?= $document['name'] ?></h4>
-        <p><?= $document['created_at'] ?></p>
-    </div>
-    <?php } ?>
-    
-</div>
-<?php }; ?>
-
-<?php if($page == 'company'){ ?>
-<div>
-    <h1>company page</h1>
-    <p>company name: <?= $company['name'] ?></p>
-
-    <?php foreach ($projects as $project) { ?>
     <div>
-        <h2><?= $project['name'] ?></h2>
-        <p>project description: <?= $project['description'] ?></p>
-        <p>project slug: <?= $project['slug'] ?> </p>
+        <h1>home page</h1>
+    </div>
+<?php }; ?>
+
+<?php if ($page == 'company_project_and_document') { ?>
+    <div>
+        <h1><?= $page ?></h1>
+        <div>
+
+            <h2><?= $document['name'] ?></h2>
+            <h3><?= $document['slug'] ?></h3>
+            <p><?= $document['text'] ?></p>
+            <h4><?= $document['created_at'] ?></h4>
+          <?php echo json_encode($document); ?>
+        </div>
+    </div>
+<?php }; ?>
+
+<?php if ($page == 'company_and_project') { ?>
+    <div>
+        <h1>company and project page</h1>
+        <h2><?= $company['name'] ?></h2>
+        <h3>Project name: <?= $project['name'] ?></h3>
+
+        <?php foreach ($documents as $document) { ?>
+            <div class="">
+                <h4><?= $document['name'] ?></h4>
+                <p><?= $document['created_at'] ?></p>
+            </div>
+        <?php } ?>
 
     </div>
-    <?php }; ?>
+<?php }; ?>
 
-</div>
+<?php if ($page == 'company') { ?>
+    <div>
+        <h1>company page</h1>
+        <p>company name: <?= $company['name'] ?></p>
+        <p>company slug: <?= $company['slug'] ?></p>
+
+        <h1>Projects:</h1>
+
+        <?php foreach ($projects as $project) { ?>
+            <div>
+                <h2><?= $project['name'] ?></h2>
+                <p>project description: <?= $project['description'] ?></p>
+                <p>project slug: <?= $project['slug'] ?> </p>
+
+                <p>encoded slug: <?= slug($project['slug']) ?> </p>
+
+            </div>
+        <?php }; ?>
+
+    </div>
 <?php }; ?>
 
 
-<!-- 
-<div>company page</div>
-
-<div>company document</div> -->

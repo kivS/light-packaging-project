@@ -2,8 +2,8 @@
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
 
 // Get the project from project_id
-$q = $db->prepare('SELECT * FROM project WHERE client_id = :client_id AND  uid = :uid LIMIT 1');
-$q->bindValue(':client_id', 1);
+$q = $db->prepare('SELECT * FROM project WHERE user_id = :user_id AND  uid = :uid LIMIT 1');
+$q->bindValue(':user_id', 1);
 $q->bindValue(':uid', $_GET['project_id']);
 $result = $q->execute();
 $project = $result->fetchArray(SQLITE3_ASSOC);

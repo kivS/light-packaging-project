@@ -4,8 +4,8 @@
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
 
 // Get the projects
-$q = $db->prepare('SELECT * FROM project WHERE client_id = :client_id');
-$q->bindValue(':client_id', 1, SQLITE3_INTEGER);
+$q = $db->prepare('SELECT * FROM project WHERE user_id = :user_id');
+$q->bindValue(':user_id', 1, SQLITE3_INTEGER);
 $results = $q->execute();
 
 $projects = [];
@@ -16,7 +16,7 @@ while ($row = $results->fetchArray()) {
         'name' => $row['name'],
         'description' => $row['description'],
         'slug' => $row['slug'],
-        'client_id' => $row['client_id'],
+        'user_id' => $row['user_id'],
         'created_at' => $row['created_at'],
         'uid' => $row['uid'],
         'url' => '/projects?project_id=' . $row['uid']
