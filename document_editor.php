@@ -1,13 +1,13 @@
 <?php
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
 
-// get the document from document_id passed by GET
+// get the document from document_uid passed by GET
 $q = $db->prepare('
-    SELECT document.*, project.name AS project_name, project.uid AS project_id 
-    FROM document JOIN project ON project.id = document.project_id 
-    WHERE document.uid = :document_id
+    SELECT document.*, project.name AS project_name, project.uid AS project_uid 
+    FROM document JOIN project ON project.uid = document.project_uid 
+    WHERE document.uid = :document_uid
 ');
-$q->bindValue(':document_id', $_GET['document_id']);
+$q->bindValue(':document_uid', $_GET['document_uid']);
 $result = $q->execute();
 $document = $result->fetchArray(SQLITE3_ASSOC);
 
@@ -53,7 +53,7 @@ if(!$document) {
                         <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                         </svg>
-                        <a href="/projects?project_id=<?php echo $document['project_id'] ?>" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"><?php echo $document['project_name'] ?></a>
+                        <a href="/projects?project_uid=<?= $document['project_uid'] ?>" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"><?= $document['project_name'] ?></a>
                     </div>
                 </li>
 
@@ -66,12 +66,12 @@ if(!$document) {
                 <?php echo $document['name']; ?>
             </h2>
 
-            <a href="http://project-packing.local/company-x/iphone-22" class="font-medium text-blue-600 hover:text-blue-500">
+            <!-- <a href="http://project-packing.local/company-x/iphone-22" class="font-medium text-blue-600 hover:text-blue-500">
                 View Project
-            </a>
+            </a> -->
 
             <form action="" @submit.prevent="saveText">
-                <textarea name="text" id="text" cols="30" rows="10" placeholder="your text here..."><?php echo $document['text']; ?></textarea>
+                <textarea name="text" id="text" cols="30" rows="10" placeholder="your text here..."><?= $document['text']; ?></textarea>
                 <button type="submit" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">save</button>
             </form>
         </div>
@@ -87,7 +87,7 @@ if(!$document) {
                 method: 'post',
                 body: JSON.stringify({
                     'text': text,
-                    'document_uid': '<?php echo $document['uid'] ?>'
+                    'document_uid': <?= json_encode($document['uid']) ?>
                 }),
 
                 headers: {

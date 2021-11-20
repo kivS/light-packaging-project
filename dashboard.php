@@ -10,14 +10,17 @@ switch ($_SERVER['DOCUMENT_URI']) {
         // check if specific project page exists and load it
         if (isset($_GET['project_uid'])) {
             $page = 'project';
+            $title = "Project page";
             break;
         }
         
         $page = 'projects';
+        $title = "Your Projects";
         break;
 
     case '/editor':
         $page = 'editor';
+        $title = "Document editor";
         break;
 
     default:
@@ -34,7 +37,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects page</title>
+    <title><?= $title; ?></title>
     <link rel="stylesheet" href="/assets/app.css">
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
