@@ -8,7 +8,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
 
     case '/projects':
         // check if specific project page exists and load it
-        if (isset($_GET['project_id'])) {
+        if (isset($_GET['project_uid'])) {
             $page = 'project';
             break;
         }

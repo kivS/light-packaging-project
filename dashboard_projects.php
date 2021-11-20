@@ -22,7 +22,7 @@ while ($row = $results->fetchArray()) {
         'user_uid' => $row['user_uid'],
         'created_at' => $row['created_at'],
         'uid' => $row['uid'],
-        'url' => '/projects?project_id=' . $row['uid']
+        'url' => '/projects?project_uid=' . $row['uid']
     ];
 };
 

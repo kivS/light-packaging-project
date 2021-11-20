@@ -1,10 +1,15 @@
 <?php
+/**
+ * Dashboard page for a expecific  page.
+ * 
+ */
+
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
 
-// Get the project from project_id
-$q = $db->prepare('SELECT * FROM project WHERE user_id = :user_id AND  uid = :uid LIMIT 1');
-$q->bindValue(':user_id', 1);
-$q->bindValue(':uid', $_GET['project_id']);
+
+// Get the project from project_uid
+$q = $db->prepare('SELECT * FROM project WHERE uid = :uid LIMIT 1');
+$q->bindValue(':uid', $_GET['project_uid']);
 $result = $q->execute();
 $project = $result->fetchArray(SQLITE3_ASSOC);
 
@@ -14,23 +19,16 @@ if(!$project) {
 
 
 // Get the documents of this project
-$q = $db->prepare('SELECT * FROM document WHERE project_id = :project_id');
-$q->bindValue(':project_id', $project['id'], SQLITE3_TEXT);
+$q = $db->prepare('SELECT * FROM document WHERE project_uid = :project_uid');
+$q->bindValue(':project_uid', $project['uid'], SQLITE3_TEXT);
 $results = $q->execute();
 
 $documents = [];
 
-while ($row = $results->fetchArray()) {
-    $documents[] = [
-        'id' => $row['id'],
-        'name' => $row['name'],
-        'project_id' => $row['project_id'],
-        'uid' => $row['uid'],
-        'created_at' => $row['created_at'],
-        'url' => '/editor?document_id=' . $row['uid']
-    ];
+while ($document = $results->fetchArray(SQLITE3_ASSOC)) {
+    $document['url'] =  '/editor?document_uid=' . $document['uid'];
+    $documents[] = $document;
 };
-
 
 ?>
 <div x-data="{newDocumentModalShow: false}" class="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
@@ -150,7 +148,7 @@ while ($row = $results->fetchArray()) {
         <?php foreach ($documents as $document) { ?>
             <div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                 <div class="flex-1 min-w-0">
-                    <a href="<?php echo $document['url'] ?>" class="focus:outline-none">
+                    <a href="<?= $document['url'] ?>" class="focus:outline-none">
                         <span class="absolute inset-0" aria-hidden="true"></span>
                         <p class="text-sm font-medium text-gray-900">
                             <?php echo $document['name']; ?>
@@ -174,7 +172,7 @@ while ($row = $results->fetchArray()) {
             method: 'post',
             body: JSON.stringify({
                 'name': document_name,
-                'project_id': "<?php echo $project['id']; ?>"
+                'project_uid': "<?= $project['uid']; ?>"
             }),
 
             headers: {
@@ -189,7 +187,7 @@ while ($row = $results->fetchArray()) {
         r.json().then(data => {
             console.log(data)
             if (data.status == 'ok') {
-                window.location.href = `/editor?document_id=${data.document_id}`
+                window.location.href = `/editor?document_uid=${data.document_uid}`
             }
         })
 

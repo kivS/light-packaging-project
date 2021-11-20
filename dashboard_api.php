@@ -60,17 +60,18 @@ switch ($_SERVER['DOCUMENT_URI']) {
         
         $document_uid = uniqid(true); // TODO: replace with UUID
 
-        $q = $db->prepare('INSERT INTO document(uid, project_id, name, created_at) VALUES (:uid, :project_id, :name, :created_at);');
+        $q = $db->prepare('INSERT INTO document(uid, project_uid, name, slug, created_at) VALUES (:uid, :project_uid, :name, :slug, :created_at);');
         $q->bindValue(':uid', $document_uid);
-        $q->bindValue(':project_id', $data['project_id']);
+        $q->bindValue(':project_uid', $data['project_uid']);
         $q->bindValue(':name', $data['name']);
+        $q->bindValue(':slug', slug($data['name']));
         $q->bindValue(':created_at', date('Y-m-d H:i:s'));
         $q->execute();
 
         echo json_encode(
             [
                 'status' => 'ok',
-                'document_id' => $document_uid
+                'document_uid' => $document_uid
             ]
         );
 
