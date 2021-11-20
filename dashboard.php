@@ -1,18 +1,30 @@
 <?php
-# pretty print $_SERVER
-function print_server($server)
-{
-    echo "<pre>";
-    print_r($server);
-    echo "</pre>";
+
+# router
+switch ($_SERVER['DOCUMENT_URI']) {
+    case '/':
+
+        break;
+
+    case '/projects':
+        // check if specific project page exists and load it
+        if (isset($_GET['project_id'])) {
+            $page = 'project';
+            break;
+        }
+        
+        $page = 'projects';
+        break;
+
+    case '/editor':
+        $page = 'editor';
+        break;
+
+    default:
+
+        break;
 }
 
-
-// print_server($_SERVER);
-// print_server($_GET);
-// print_server($_POST);
-// exit();
-// phpinfo()
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +34,7 @@ function print_server($server)
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Projects page</title>
     <link rel="stylesheet" href="/assets/app.css">
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
@@ -33,36 +45,17 @@ function print_server($server)
         <div x-show="open" class="fixed inset-0 flex z-40 md:hidden" role="dialog" aria-modal="true">
             <!--
           Off-canvas menu overlay, show/hide based on off-canvas menu state.
-    
-          Entering: "transition-opacity ease-linear duration-300"
-            From: "opacity-0"
-            To: "opacity-100"
-          Leaving: "transition-opacity ease-linear duration-300"
-            From: "opacity-100"
-            To: "opacity-0"
         -->
             <div x-show="open" @click="open = false" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-600 bg-opacity-75" aria-hidden="true"></div>
 
             <!--
           Off-canvas menu, show/hide based on off-canvas menu state.
     
-          Entering: "transition ease-in-out duration-300 transform"
-            From: "-translate-x-full"
-            To: "translate-x-0"
-          Leaving: "transition ease-in-out duration-300 transform"
-            From: "translate-x-0"
-            To: "-translate-x-full"
         -->
             <div x-show="open" x-transition:enter="transition ease-in-out duration-300 transform" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in-out duration-300 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" class="relative flex-1 flex flex-col max-w-xs w-full bg-gray-800">
                 <!--
             Close button, show/hide based on off-canvas menu state.
-    
-            Entering: "ease-in-out duration-300"
-              From: "opacity-0"
-              To: "opacity-100"
-            Leaving: "ease-in-out duration-300"
-              From: "opacity-100"
-              To: "opacity-0"
+
           -->
                 <div x-show="open" x-transition:enter="ease-in-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in-out duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="absolute top-0 right-0 -mr-12 pt-2">
                     <button type="button" @click="open = false" class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
@@ -250,31 +243,9 @@ function print_server($server)
                 </button>
             </div>
             <main class="flex-1">
-                <?php  # router
-                switch ($_SERVER['DOCUMENT_URI']) {
-                    case '/':
-                           
-                        break;
-                   
-                    case '/projects':
-                        // check if specific project page exists and load it
-                        if(isset($_GET['project_id'])){
-                            include 'dashboard_project.php';
-                            break;
-                        }
-
-                        include 'dashboard_projects.php';
-                        break;
-
-                    case '/editor':
-                        include 'document_editor.php';
-                        break;
-                   
-                    default:
-                
-                        break;
-                }
-                ?>
+                <?php if($page == 'projects') include 'dashboard_projects.php'; ?>
+                <?php if($page == 'project') include 'dashboard_project.php'; ?>
+                <?php if($page == 'editor')  include 'document_editor.php'; ?>
             </main>
         </div>
     </div>

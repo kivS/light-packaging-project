@@ -1,29 +1,32 @@
 <?php
-// print_server($_POST);
-// exit();
+/**
+ * Dashboard page for creating new projects. Projects house documents 
+ */
+
+
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
 
+$USER_UID = 'testuid';
+
 // Get the projects
-$q = $db->prepare('SELECT * FROM project WHERE user_id = :user_id');
-$q->bindValue(':user_id', 1, SQLITE3_INTEGER);
+$q = $db->prepare('SELECT * FROM project WHERE user_uid = :user_uid');
+$q->bindValue(':user_uid', $USER_UID, SQLITE3_TEXT); // TODO: user_uid will come from login
 $results = $q->execute();
-
 $projects = [];
-
 while ($row = $results->fetchArray()) {
     $projects[] = [
         'id' => $row['id'],
         'name' => $row['name'],
         'description' => $row['description'],
         'slug' => $row['slug'],
-        'user_id' => $row['user_id'],
+        'user_uid' => $row['user_uid'],
         'created_at' => $row['created_at'],
         'uid' => $row['uid'],
         'url' => '/projects?project_id=' . $row['uid']
     ];
 };
 
-$company_public_url = 'http://project-packing.local/company-Y/'
+// $company_public_url = 'http://project-packing.local/company-Y/'
 
 ?>
 
@@ -122,6 +125,7 @@ $company_public_url = 'http://project-packing.local/company-Y/'
             New Project
         </button>
 
+        <?php /* ?>
         <div class="p-4" id="qrcode"></div>
         <script type="text/javascript">
             // load script file async for /assets/qrcode.min.js with callback
@@ -140,6 +144,7 @@ $company_public_url = 'http://project-packing.local/company-Y/'
             };
             document.getElementsByTagName('head')[0].appendChild(script);
         </script>
+        */ ?>
 
     </div>
 
@@ -200,7 +205,8 @@ $company_public_url = 'http://project-packing.local/company-Y/'
             method: 'post',
             body: JSON.stringify({
                 'project_name': project_name,
-                'project_description': project_description
+                'project_description': project_description,
+                'user_uid': <?=json_encode($USER_UID); ?>
             }),
 
             headers: {
@@ -215,7 +221,7 @@ $company_public_url = 'http://project-packing.local/company-Y/'
         r.json().then(data => {
             console.log(data)
             if (data.status == 'ok') {
-                window.location.href = '/projects?project_id=' + data.project_id
+                window.location.href = '/projects?project_uid=' + data.project_uid
             }
         })
 

@@ -1,5 +1,7 @@
 <?php
 
+require_once('functions.php');
+
 header('Content-Type: application/json; charset=utf-8');
 
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
@@ -27,9 +29,8 @@ switch ($_SERVER['DOCUMENT_URI']) {
             true
         );
 
-    
         $q = $db->prepare(
-            'INSERT INTO project (uid, name, description, slug, client_id, created_at) VALUES (:uid, :name, :description, :slug, :client_id, :created_at)'
+            'INSERT INTO project (uid, name, description, slug, user_uid, created_at) VALUES (:uid, :name, :description, :slug, :user_uid, :created_at)'
         );
         
         $project_uid = uniqid(true); // TODO: replace with UUID
@@ -37,15 +38,15 @@ switch ($_SERVER['DOCUMENT_URI']) {
         $q->bindValue(':uid', $project_uid);
         $q->bindValue(':name', $data['project_name']);
         $q->bindValue(':description', $data['project_description']);
-        $q->bindValue(':slug', $data['project_name']);
-        $q->bindValue(':client_id', 1);
+        $q->bindValue(':slug', slug($data['project_name']));
+        $q->bindValue(':user_uid', $data['user_uid']);
         $q->bindValue(':created_at', date('Y-m-d H:i:s'));
         $q->execute();
             
         echo json_encode(
             [
                 'status' => 'ok',
-                'project_id' => $project_uid
+                'project_uid' => $project_uid
             ]
         );
 
