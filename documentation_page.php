@@ -60,6 +60,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
             $result = $q->execute();
             $documents = [];
             while ($document = $result->fetchArray(SQLITE3_ASSOC)) {
+                $document['url'] = "/{$company['slug']}/{$project['slug']}/{$document['slug']}";
                 $documents[] = $document;
             }
         } else {
@@ -71,6 +72,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
             $result = $q->execute();
             $projects = [];
             while ($project = $result->fetchArray(SQLITE3_ASSOC)) {
+                $project['url'] = "/{$company['slug']}/{$project['slug']}";
                 $projects[] = $project;
             }
         }
@@ -118,6 +120,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                 <h4><?= $document['name'] ?></h4>
                 <h5><?= $document['slug'] ?></h5>
                 <p><?= $document['created_at'] ?></p>
+                <a href="<?= $document['url'] ?>">View</a>                
             </div>
         <?php } ?>
 
@@ -137,7 +140,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                 <h2><?= $project['name'] ?></h2>
                 <p>project description: <?= $project['description'] ?></p>
                 <p>project slug: <?= $project['slug'] ?> </p>
-
+                <a href="<?= $project['url'] ?>">View</a>
                 <p>encoded slug: <?= slug($project['slug']) ?> </p>
 
             </div>
