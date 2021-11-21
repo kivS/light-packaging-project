@@ -6,20 +6,6 @@ header('Content-Type: application/json; charset=utf-8');
 
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
 
-function print_server($data)
-{
-    echo "<pre>";
-    print_r($data);
-    echo "</pre>";
-}
-
-
-// print_server($_SERVER);
-// print_server($_GET);
-// print_server($_POST);
-// echo file_get_contents('php://input');
-// exit();
-// phpinfo()
 
 switch ($_SERVER['DOCUMENT_URI']) {
     case '/api/new-project':

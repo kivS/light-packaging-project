@@ -26,7 +26,6 @@ while ($row = $results->fetchArray()) {
     ];
 };
 
-// $company_public_url = 'http://project-packing.local/company-Y/'
 
 ?>
 
