@@ -41,11 +41,11 @@ switch ($_SERVER['DOCUMENT_URI']) {
             $page = 'company_project_and_document';
 
             // get document info
-            $q = $db->prepare('SELECT * FROM document WHERE slug = :document_slug AND project_id = (SELECT id from project WHERE slug = :project_slug) LIMIT 1');
+            $q = $db->prepare('SELECT * FROM document WHERE slug = :document_slug LIMIT 1');
             $q->bindValue(':document_slug', $document_slug);
-            $q->bindValue(':project_slug', $project_slug);
             $result = $q->execute();
             $document = $result->fetchArray(SQLITE3_ASSOC);
+
 
         } elseif ($company_slug && $project_slug) {
             $page = 'company_and_project';
@@ -66,8 +66,8 @@ switch ($_SERVER['DOCUMENT_URI']) {
             $page = 'company';
 
             // get company projects
-            $q = $db->prepare('SELECT * FROM project WHERE user_id = :user_id');
-            $q->bindValue(':user_id', $company['id']);
+            $q = $db->prepare('SELECT * FROM project WHERE user_uid = :user_uid');
+            $q->bindValue(':user_uid', $company['uid']);
             $result = $q->execute();
             $projects = [];
             while ($project = $result->fetchArray(SQLITE3_ASSOC)) {
