@@ -18,7 +18,7 @@ if (!$project) {
     die('<div class="text-center p-4"> Project not found </div>');
 }
 
-$company_public_project_url = "http://project-packing.local/company-x/{$project['slug']}";
+$company_public_project_url = "http://project-light-packaging.local/company-x/{$project['slug']}";
 
 
 // Get the documents of this project

@@ -3,7 +3,8 @@
 # router
 switch ($_SERVER['DOCUMENT_URI']) {
     case '/':
-
+        $page = 'home';
+        $title = 'Home';
         break;
 
     case '/projects':
@@ -13,7 +14,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
             $title = "Project page";
             break;
         }
-        
+
         $page = 'projects';
         $title = "Your Projects";
         break;
@@ -246,9 +247,15 @@ switch ($_SERVER['DOCUMENT_URI']) {
                 </button>
             </div>
             <main class="flex-1">
-                <?php if($page == 'projects') include 'dashboard_projects.php'; ?>
-                <?php if($page == 'project') include 'dashboard_project.php'; ?>
-                <?php if($page == 'editor')  include 'document_editor.php'; ?>
+                <?php if ($page == 'home') { ?>
+                    <div>
+                        <h1>home page</h1>
+                    </div>
+                <?php }; ?>
+
+                <?php if ($page == 'projects') include 'dashboard_projects.php'; ?>
+                <?php if ($page == 'project') include 'dashboard_project.php'; ?>
+                <?php if ($page == 'editor')  include 'document_editor.php'; ?>
             </main>
         </div>
     </div>
