@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Dashboard page for a expecific  page.
  * 
@@ -13,9 +14,11 @@ $q->bindValue(':uid', $_GET['project_uid']);
 $result = $q->execute();
 $project = $result->fetchArray(SQLITE3_ASSOC);
 
-if(!$project) {
+if (!$project) {
     die('<div class="text-center p-4"> Project not found </div>');
 }
+
+$company_public_project_url = "http://project-packing.local/company-x/{$project['slug']}";
 
 
 // Get the documents of this project
@@ -31,7 +34,101 @@ while ($document = $results->fetchArray(SQLITE3_ASSOC)) {
 };
 
 ?>
-<div x-data="{newDocumentModalShow: false}" class="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
+<div x-data="{newDocumentModalShow: false, qrCodeSlideOverOpen: false}" class="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
+
+    <!-- slide-over for project creation -->
+    <div x-show="qrCodeSlideOverOpen" x-cloak class="z-10 fixed inset-0 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Background overlay, show/hide based on slide-over state. -->
+            <div x-show="qrCodeSlideOverOpen" class="absolute inset-0" aria-hidden="true">
+                <div class="fixed inset-y-0 pl-16 max-w-full right-0 flex">
+                    <!-- Slide-over panel, show/hide based on slide-over state. -->
+                    <div x-show="qrCodeSlideOverOpen" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="w-screen max-w-md">
+                        <form action="" method="POST" @submit.prevent="" class="h-full divide-y divide-gray-200 flex flex-col bg-white shadow-xl">
+                            <div class="flex-1 h-0 overflow-y-auto">
+                                <div class="py-6 px-4 bg-indigo-700 sm:px-6">
+                                    <div class="flex items-center justify-between">
+                                        <h2 class="text-lg font-medium text-white" id="slide-over-title">
+                                            QR Code
+                                        </h2>
+                                        <div class="ml-3 h-7 flex items-center">
+                                            <button @click="qrCodeSlideOverOpen = false" type="button" class="bg-indigo-700 rounded-md text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
+                                                <span class="sr-only">Close panel</span>
+                                                <!-- Heroicon name: outline/x -->
+                                                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1">
+                                        <p class="text-sm text-indigo-300">
+                                            Manage project QR code.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <div class="px-4 divide-y divide-gray-200 sm:px-6">
+                                        <div class="space-y-6 pt-6 pb-5">
+
+                                            <div class="p-4" id="qrcode"></div>
+                                            <script type="text/javascript">
+                                                // load script file async for /assets/qrcode.min.js with callback
+                                                let script = document.createElement('script');
+                                                script.src = '/assets/qrcode.min.js';
+                                                script.async = true;
+                                                script.onload = function() {
+                                                    let qrcode = new QRCode("qrcode", {
+                                                        text: <?= json_encode($company_public_project_url); ?>,
+                                                        width: 300,
+                                                        height: 300,
+                                                        colorDark: "#000000",
+                                                        colorLight: "#ffffff",
+                                                        correctLevel: QRCode.CorrectLevel.H
+                                                    });
+                                                };
+                                                document.getElementsByTagName('head')[0].appendChild(script);
+                                            </script>
+
+                                            <a href="<?= $company_public_project_url; ?>" class="group inline-flex items-center text-gray-500 hover:text-gray-900">
+                                                <!-- Heroicon name: solid/question-mark-circle -->
+                                                <svg class="h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                                </svg>
+                                                <span class="ml-2">
+                                                    <?= $company_public_project_url; ?>
+                                                </span>
+                                            </a>
+
+                                        </div>
+                                        <div class="pt-4 pb-6">
+                                            <div class="mt-4 flex text-sm">
+                                                <a href="#" class="group inline-flex items-center text-gray-500 hover:text-gray-900">
+                                                    <!-- Heroicon name: solid/question-mark-circle -->
+                                                    <svg class="h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span class="ml-2">
+                                                        Learn more about sharing
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-shrink-0 px-4 py-4 flex justify-end">
+                                <button @click="qrCodeSlideOverOpen = false" type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Close
+                                </button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- document name modal -->
     <div x-cloak x-show="newDocumentModalShow" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -134,9 +231,10 @@ while ($document = $results->fetchArray(SQLITE3_ASSOC)) {
             </h2>
         </div>
         <div class="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
-            <!-- <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Edit
-            </button> -->
+
+            <button @click="qrCodeSlideOverOpen = true" type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                QR Code
+            </button>
             <button @click="newDocumentModalShow = true" type="button" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 New Document
             </button>

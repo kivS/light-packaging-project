@@ -20,15 +20,20 @@ switch ($_SERVER['DOCUMENT_URI']) {
         $document_slug = $matches['document'] ?? null;
 
         // get company info
-        $q = $db->prepare('SELECT * FROM user WHERE slug = :company');
-        $q->bindValue(':company', $company_slug);
+        $q = $db->prepare('SELECT * FROM user WHERE slug = :company_slug');
+        $q->bindValue(':company_slug', $company_slug);
         $result = $q->execute();
         $company = $result->fetchArray(SQLITE3_ASSOC);
 
+        if(!$company) {
+            header('HTTP/1.1 404 Not Found');
+            echo 'Company not found';
+            exit;
+        };
+
         // prepare company project query
-        $query_project = $db->prepare('SELECT * FROM project WHERE slug = :project_slug AND user_id = :user_id LIMIT 1');
+        $query_project = $db->prepare('SELECT * FROM project WHERE slug = :project_slug  LIMIT 1');
         $query_project->bindValue(':project_slug', $project_slug);
-        $query_project->bindValue(':user_id', $company['id']);
 
 
         if ($company_slug && $project_slug && $document_slug) {
@@ -50,7 +55,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
             $project = $result->fetchArray(SQLITE3_ASSOC);
 
             // get project documents
-            $q = $db->prepare('SELECT * FROM document WHERE project_id = (SELECT id from project WHERE slug = :project_slug)');
+            $q = $db->prepare('SELECT * FROM document WHERE project_uid = (SELECT uid from project WHERE slug = :project_slug)');
             $q->bindValue(':project_slug', $project_slug);
             $result = $q->execute();
             $documents = [];
@@ -107,9 +112,11 @@ switch ($_SERVER['DOCUMENT_URI']) {
         <h2><?= $company['name'] ?></h2>
         <h3>Project name: <?= $project['name'] ?></h3>
 
+        <h4>Project documents:</h4>
         <?php foreach ($documents as $document) { ?>
             <div class="">
                 <h4><?= $document['name'] ?></h4>
+                <h5><?= $document['slug'] ?></h5>
                 <p><?= $document['created_at'] ?></p>
             </div>
         <?php } ?>
