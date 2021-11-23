@@ -25,7 +25,8 @@ switch ($_SERVER['DOCUMENT_URI']) {
         break;
 
     default:
-
+        $page = '404';
+        $title = "Page not found";
         break;
 }
 
@@ -88,7 +89,8 @@ switch ($_SERVER['DOCUMENT_URI']) {
                             </svg>
                             Dashboard
                         </a>
-
+                        
+                        <?php /*; 
                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md">
                             <!-- Heroicon name: outline/users -->
                             <svg class="text-gray-400 group-hover:text-gray-300 mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -96,6 +98,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                             </svg>
                             Team
                         </a>
+                        */ ?>
 
                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md">
                             <!-- Heroicon name: outline/folder -->
@@ -105,6 +108,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                             Projects
                         </a>
 
+                        <?php /* ?>
                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md">
                             <!-- Heroicon name: outline/calendar -->
                             <svg class="text-gray-400 group-hover:text-gray-300 mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -128,21 +132,23 @@ switch ($_SERVER['DOCUMENT_URI']) {
                             </svg>
                             Reports
                         </a>
+                        */ ?>
+
                     </nav>
                 </div>
                 <div class="flex-shrink-0 flex bg-gray-700 p-4">
                     <a href="#" class="flex-shrink-0 group block">
                         <div class="flex items-center">
-                            <div>
+                            <!-- <div>
                                 <img class="inline-block h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                            </div>
+                            </div> -->
                             <div class="ml-3">
-                                <p class="text-base font-medium text-white">
+                                <!-- <p class="text-base font-medium text-white">
                                     Tom Cook
                                 </p>
                                 <p class="text-sm font-medium text-gray-400 group-hover:text-gray-300">
                                     View profile
-                                </p>
+                                </p> -->
                             </div>
                         </div>
                     </a>
@@ -176,6 +182,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                             Dashboard
                         </a>
 
+                        <?php /*; ?>
                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <!-- Heroicon name: outline/users -->
                             <svg class="text-gray-400 group-hover:text-gray-300 mr-3 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -183,7 +190,8 @@ switch ($_SERVER['DOCUMENT_URI']) {
                             </svg>
                             Team
                         </a>
-
+                        */ ?>
+                        
                         <a href="/projects" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <!-- Heroicon name: outline/folder -->
                             <svg class="text-gray-400 group-hover:text-gray-300 mr-3 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -192,6 +200,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                             Projects
                         </a>
 
+                        <?php /* ?>
                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <!-- Heroicon name: outline/calendar -->
                             <svg class="text-gray-400 group-hover:text-gray-300 mr-3 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -215,27 +224,29 @@ switch ($_SERVER['DOCUMENT_URI']) {
                             </svg>
                             Reports
                         </a>
+                        */ ?>
                     </nav>
                 </div>
                 <div class="flex-shrink-0 flex bg-gray-700 p-4">
                     <a href="#" class="flex-shrink-0 w-full group block">
                         <div class="flex items-center">
-                            <div>
+                            <!-- <div>
                                 <img class="inline-block h-9 w-9 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                            </div>
+                            </div> -->
                             <div class="ml-3">
-                                <p class="text-sm font-medium text-white">
+                                <!-- <p class="text-sm font-medium text-white">
                                     Tom Cook
                                 </p>
                                 <p class="text-xs font-medium text-gray-300 group-hover:text-gray-200">
                                     View profile
-                                </p>
+                                </p> -->
                             </div>
                         </div>
                     </a>
                 </div>
             </div>
         </div>
+
         <div class="md:pl-64 flex flex-col flex-1">
             <div class="sticky top-0 z-10 md:hidden pl-1 pt-1 sm:pl-3 sm:pt-3 bg-gray-100">
                 <button type="button" @click="open = true" class="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
