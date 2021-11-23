@@ -4,28 +4,15 @@
  */
 
 
-$db = new SQLite3(__DIR__ . '/db.sqlite3');
-
-$USER_UID = 'testuid';
-
 // Get the projects
 $q = $db->prepare('SELECT * FROM project WHERE user_uid = :user_uid');
-$q->bindValue(':user_uid', $USER_UID, SQLITE3_TEXT); // TODO: user_uid will come from login
+$q->bindValue(':user_uid', $user['uid'], SQLITE3_TEXT); 
 $results = $q->execute();
 $projects = [];
-while ($row = $results->fetchArray()) {
-    $projects[] = [
-        'id' => $row['id'],
-        'name' => $row['name'],
-        'description' => $row['description'],
-        'slug' => $row['slug'],
-        'user_uid' => $row['user_uid'],
-        'created_at' => $row['created_at'],
-        'uid' => $row['uid'],
-        'url' => '/projects?project_uid=' . $row['uid']
-    ];
+while ($project = $results->fetchArray(SQLITE3_ASSOC)) {
+    $project['url'] = "/projects?project_uid={$project['uid']}";
+    $projects[] = $project;
 };
-
 
 ?>
 
@@ -185,7 +172,7 @@ while ($row = $results->fetchArray()) {
             body: JSON.stringify({
                 'project_name': project_name,
                 'project_description': project_description,
-                'user_uid': <?=json_encode($USER_UID); ?>
+                'user_uid': <?=json_encode($user['uid']); ?>
             }),
 
             headers: {
