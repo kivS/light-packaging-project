@@ -5,8 +5,6 @@
  * 
  */
 
-$db = new SQLite3(__DIR__ . '/db.sqlite3');
-
 
 // Get the project from project_uid
 $q = $db->prepare('SELECT * FROM project WHERE uid = :uid LIMIT 1');
@@ -18,7 +16,7 @@ if (!$project) {
     die('<div class="text-center p-4"> Project not found </div>');
 }
 
-$company_public_project_url = "http://project-light-packaging.local/company-x/{$project['slug']}";
+$company_public_project_url = SITE_URL."/{$user['slug']}/{$project['slug']}";
 
 
 // Get the documents of this project
