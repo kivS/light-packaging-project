@@ -32,6 +32,7 @@ if (isset($_GET['login_hash'])) {
     session_write_close();
 
     header("Location: " . DASHBOARD_URL);
+    exit();
 }
 
 // user is asking for a login link
@@ -43,7 +44,7 @@ if (isset($_POST['email'])) {
     $user = $result->fetchArray(SQLITE3_ASSOC);
 
     if (!$user) {
-        $error_msg = 'User not found';
+        $error_msg = 'Account not found';
         // redirect with error to signup
         header('Location: /login?error_msg=' . $error_msg);
         exit();

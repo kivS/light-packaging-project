@@ -4,8 +4,21 @@ session_start();
 
 if(!isset($_SESSION[SESSION_USER_UID_KEY])){
     header("Location: ".DASHBOARD_URL."/login");
+    exit;
 
 }
+
+$db = new SQLite3(__DIR__ . '/db.sqlite3');
+
+// get user
+$query = $db->prepare('
+    SELECT *
+    FROM user
+    WHERE uid = :uid
+');
+$query->bindValue(':uid', $_SESSION[SESSION_USER_UID_KEY]);
+$result = $query->execute();
+$user = $result->fetchArray(SQLITE3_ASSOC);
 
 # router
 switch ($_SERVER['DOCUMENT_URI']) {
@@ -268,6 +281,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                 <?php if ($page == 'home') { ?>
                     <div>
                         <h1>home page</h1>
+                        <p>Welcome back <?= $user['name']; ?></p>
                     </div>
                 <?php }; ?>
 

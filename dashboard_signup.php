@@ -4,7 +4,7 @@ session_start();
 
 if(isset($_SESSION[SESSION_USER_UID_KEY])){
     header("Location: ".DASHBOARD_URL);
-
+    exit;
 }
 
 require_once('functions.php');
@@ -15,6 +15,18 @@ $email = $_POST['email'] ?? null;
 $name = $_POST['name'] ?? null;
 
 if($email && $name) {
+
+    // check if email is already registered
+    $q = $db->prepare('SELECT * FROM user WHERE email = :email LIMIT 1');
+    $q->bindValue(':email', $email);
+    $result = $q->execute();
+    $user = $result->fetchArray();
+    if($user){
+        $error_msg = 'Email already registered';
+        header("Location: ".DASHBOARD_URL."/signup?error_msg=".$error_msg);
+        exit;
+    }
+
     $user_uid = hash('ripemd160', random_bytes(32));
     $login_hash = hash('ripemd256', random_bytes(69));
 
@@ -55,13 +67,18 @@ if($email && $name) {
 <body>
 
     <form action="/signup" method="post">
+        <?php if(isset($_GET['error_msg'])){ ?>
+        <div class="error">
+            <?= $_GET['error_msg']; ?>
+        </div>
+        <?php }; ?>
         <input type="email" name="email" placeholder="name@email.com" required>
         <input type="text" name="name" placeholder="company name" required>
         <input type="submit" value="Register">
     </form>
 
     <?php if(isset($email)){ ?>
-        <p><?= $email ?></p>
+        <p>Email: <?= $email ?></p>
     <?php }; ?>
     
 
