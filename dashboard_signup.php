@@ -1,4 +1,12 @@
 <?php
+require('.env.php');
+session_start();
+
+if(isset($_SESSION[SESSION_USER_UID_KEY])){
+    header("Location: ".DASHBOARD_URL);
+
+}
+
 require_once('functions.php');
 
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
@@ -25,8 +33,9 @@ if($email && $name) {
 
 
     # create email message with login link
+    $dashboard_url = DASHBOARD_URL;
     $email = "
-    You can access the dashboard with the following by clicking <a href='http://dashboard.project-light-packaging.local/login?login_hash={$login_hash}'>here</a>.
+    You can access the dashboard with the following by clicking <a href='{$dashboard_url}/login?login_hash={$login_hash}'>here</a>.
     ";
     
 

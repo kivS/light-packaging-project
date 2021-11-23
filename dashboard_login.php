@@ -1,4 +1,12 @@
 <?php
+require('.env.php');
+session_start();
+
+if(isset($_SESSION[SESSION_USER_UID_KEY])){
+    header("Location: ".DASHBOARD_URL);
+
+}
+
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
 
 if (isset($_GET['login_hash'])) {
@@ -20,8 +28,13 @@ if (isset($_GET['login_hash'])) {
     }
 
     echo "let\'s login you {$user['name']}!";
+    $_SESSION[SESSION_USER_UID_KEY] = $user['uid'];
+    session_write_close();
+
+    header("Location: " . DASHBOARD_URL);
 }
 
+// user is asking for a login link
 if (isset($_POST['email'])) {
     // get user from email
     $q = $db->prepare('SELECT * FROM user WHERE email = :email LIMIT 1');
@@ -36,9 +49,10 @@ if (isset($_POST['email'])) {
         exit();
     }
 
+    $dashboard_url = DASHBOARD_URL;
     $email = "
         <p>
-            You can login by clicking  <a href='http://dashboard.project-light-packaging.local/login?login_hash={$user['login_hash']}'>here</a>
+            You can login by clicking  <a href='{$dashboard_url}/login?login_hash={$user['login_hash']}'>here</a>
         </p>
     ";
 }

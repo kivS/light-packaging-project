@@ -2,3 +2,4 @@ logs/
 node_modules/
 *.sqlite3
 .vscode/
+.env.php

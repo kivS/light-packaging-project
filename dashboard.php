@@ -1,4 +1,11 @@
 <?php
+require('.env.php');
+session_start();
+
+if(!isset($_SESSION[SESSION_USER_UID_KEY])){
+    header("Location: ".DASHBOARD_URL."/login");
+
+}
 
 # router
 switch ($_SERVER['DOCUMENT_URI']) {
