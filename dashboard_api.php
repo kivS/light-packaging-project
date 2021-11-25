@@ -1,8 +1,14 @@
 <?php
+require('.env.php');
+session_start();
+
+
+if (!isset($_SESSION[SESSION_USER_UID_KEY])) {
+    header('HTTP/1.0 403 Forbidden'); 
+    exit;
+}
 
 require_once('functions.php');
-
-header('Content-Type: application/json; charset=utf-8');
 
 $db = new SQLite3(__DIR__ . '/db.sqlite3');
 
