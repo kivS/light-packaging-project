@@ -89,7 +89,49 @@ switch ($_SERVER['DOCUMENT_URI']) {
         );
 
         break;
-        
+      
+    case '/api/create-document-translation':
+        $data = json_decode(
+            file_get_contents('php://input'),
+            true
+        );
+
+        $document_translation_uid = bin2hex(random_bytes(36));
+
+        // check if translation already exists
+        $q = $db->prepare('SELECT * FROM document_translation WHERE document_uid = :document_uid AND language_code = :language_code LIMIT 1');
+        $q->bindValue(':document_uid', $data['document_uid']);
+        $q->bindValue(':language_code', $data['language_code']);
+        $result = $q->execute();
+        $row = $result->fetchArray();
+
+        if ($row) {
+            echo json_encode(
+                [
+                    'status' => 'error',
+                    'message' => 'Translation already exists'
+                ]
+            );
+            break;
+        }
+
+        $q = $db->prepare('
+            INSERT INTO document_translation(uid, document_uid, language_code, created_at) 
+            VALUES (:uid, :document_uid, :language_code, :created_at);
+        ');
+        $q->bindValue(':uid', $document_translation_uid);
+        $q->bindValue(':document_uid', $data['document_uid']);
+        $q->bindValue(':language_code', $data['language_code']);
+        $q->bindValue(':created_at', date('Y-m-d H:i:s'));
+        $r = $q->execute();
+
+        echo json_encode(
+            [
+                'status' => 'ok',
+                'language_code' => $data['language_code'],
+            ]
+        );
+        break;
     default:
         header('HTTP/1.1 404 Not Found');
         break;

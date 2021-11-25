@@ -172,7 +172,7 @@ while ($document = $results->fetchArray(SQLITE3_ASSOC)) {
                             </h3>
                             <div class="mt-2">
                                 <div>
-                                    <label for="email" class="sr-only">Document name</label>
+                                    <label for="name" class="sr-only">Document name</label>
                                     <input type="text" name="name" id="name" required class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="eg: Instruction manual">
                                 </div>
                             </div>
