@@ -25,7 +25,9 @@ switch ($_SERVER['DOCUMENT_URI']) {
             'INSERT INTO project (uid, name, description, slug, user_uid, created_at) VALUES (:uid, :name, :description, :slug, :user_uid, :created_at)'
         );
         
-        $project_uid = uniqid(true); // TODO: replace with UUID
+        $project_uid = bin2hex(random_bytes(36));
+
+        
 
         $q->bindValue(':uid', $project_uid);
         $q->bindValue(':name', $data['project_name']);
@@ -50,7 +52,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
             true
         );
         
-        $document_uid = uniqid(true); // TODO: replace with UUID
+        $document_uid = bin2hex(random_bytes(36));
 
         $q = $db->prepare('INSERT INTO document(uid, project_uid, name, slug, created_at) VALUES (:uid, :project_uid, :name, :slug, :created_at);');
         $q->bindValue(':uid', $document_uid);
