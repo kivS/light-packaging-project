@@ -71,17 +71,52 @@ switch ($_SERVER['DOCUMENT_URI']) {
 
         break;
 
-    case '/api/save-document-text':
-        $data = json_decode(
-            file_get_contents('php://input'),
-            true
-        );
+    
+    case '/api/upload-document-file':
+        
+        if(!isset($_FILES['document-file']) OR !isset($_POST['document_uid'])) {
+            header('HTTP/1.0 400 Bad Request');
+            exit;
+        }
 
-        $q = $db->prepare('UPDATE document SET text = :text WHERE uid = :uid');
-        $q->bindValue(':uid', $data['document_uid']);
-        $q->bindValue(':text', $data['text']);
-        $q->execute(); 
 
+        $filepath = $_FILES['document-file']['tmp_name'];
+        $document_uid = $_POST['document_uid'];
+
+        
+        // save file
+        $newFilePath =  "/document-files/{$document_uid}.pdf";
+
+        copy($filepath, UPLOADS_DIR . $newFilePath);
+        unlink($filepath);
+
+        // store file path in db with 
+        $q = $db->prepare('
+            UPDATE document 
+            SET 
+                file_path = :file_path, 
+                file_original_name = :file_original_name,
+                file_uploaded_at = :file_uploaded_at
+            WHERE uid = :uid
+            RETURNING id
+        ');
+        $q->bindValue(':file_path', $newFilePath);
+        $q->bindValue(':file_uploaded_at', date('Y-m-d H:i:s'));
+        $q->bindValue(':file_original_name', $_FILES['document-file']['name']);
+        $q->bindValue(':uid', $document_uid);
+        $result = $q->execute();
+
+        if($result->numColumns() == 0) {
+            header('HTTP/1.0 400 Bad Request');
+            echo json_encode(
+                [
+                    'status' => 'error',
+                    'error' => 'Could not save file'
+                ]
+            );
+            exit;
+        }
+        
         echo json_encode(
             [
                 'status' => 'ok'
@@ -89,7 +124,6 @@ switch ($_SERVER['DOCUMENT_URI']) {
         );
 
         break;
-        
     default:
         header('HTTP/1.1 404 Not Found');
         break;

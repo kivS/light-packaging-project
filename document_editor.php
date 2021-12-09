@@ -12,7 +12,7 @@ $result = $q->execute();
 $document = $result->fetchArray(SQLITE3_ASSOC);
 
 
-if(!$document) {
+if (!$document) {
     die('<div class="text-center p-4"> Document not found </div>');
 }
 
@@ -66,46 +66,38 @@ if(!$document) {
                 <?php echo $document['name']; ?>
             </h2>
 
-            <!-- <a href="http://project-packing.local/company-x/iphone-22" class="font-medium text-blue-600 hover:text-blue-500">
-                View Project
-            </a> -->
 
-            <form action="" @submit.prevent="saveText">
-                <textarea name="text" id="text" cols="30" rows="10" placeholder="your text here..."><?= $document['text']; ?></textarea>
-                <button type="submit" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">save</button>
+            <form action="" method="post" @submit.prevent="uploadFile" enctype="multipart/form-data">
+                <input type="file" name="document-file" id="document-file" accept=".pdf" />
+                <button type="submit">Upload</button>
             </form>
+
+
         </div>
 
     </div>
 
     <script>
-        async function saveText(e) {
+        async function uploadFile(e) {
 
-            let text = e.target.querySelector('#text').value
 
-            let r = await fetch('/api/save-document-text', {
-                method: 'post',
-                body: JSON.stringify({
-                    'text': text,
-                    'document_uid': <?= json_encode($document['uid']) ?>
-                }),
+            let file = document.querySelector('input#document-file').files[0];
+            console.log(file);
 
-                headers: {
-                    'Content-Type': 'application/json',
-                    // 'Authorization': auth
-                },
+            let formData = new FormData();
+            formData.append('document-file', file);
+            formData.append('document_uid', '<?= $document['uid'] ?>');
 
-            }).catch(err => {
-                console.error(err)
-            })
 
-            r.json().then(data => {
-                console.log(data)
-                if (data.status == 'ok') {
-                    // window.location.href = `/editor?document_id=${data.document_id}`
-                }
-            })
+            let response = await fetch('/api/upload-document-file', {
+                method: 'POST',
+                body: formData
+            });
 
+            console.log(response);
+
+            let json_resp = await response.json();
+            console.log(json_resp);
 
         }
     </script>
