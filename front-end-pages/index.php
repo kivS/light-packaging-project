@@ -1,13 +1,14 @@
 <?php
+require(__DIR__ . '/../.env.php');
+require_once(__DIR__ . '/../functions.php');
 
-require_once('functions.php');
-
-$db = new SQLite3(__DIR__ . '/db.sqlite3');
+$db = new SQLite3(DB_FILE);
 
 
 switch ($_SERVER['DOCUMENT_URI']) {
     case '/':
         $page = 'home';
+        $title = 'Home';
         break;
 
 
@@ -25,7 +26,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
         $result = $q->execute();
         $company = $result->fetchArray(SQLITE3_ASSOC);
 
-        if(!$company) {
+        if (!$company) {
             header('HTTP/1.1 404 Not Found');
             echo 'Company not found';
             exit;
@@ -38,17 +39,17 @@ switch ($_SERVER['DOCUMENT_URI']) {
 
         if ($company_slug && $project_slug && $document_slug) {
 
-            $page = 'company_project_and_document';
+            $page = 'document';
+            $title = 'Document page';
 
             // get document info
             $q = $db->prepare('SELECT * FROM document WHERE slug = :document_slug LIMIT 1');
             $q->bindValue(':document_slug', $document_slug);
             $result = $q->execute();
             $document = $result->fetchArray(SQLITE3_ASSOC);
-
-
         } elseif ($company_slug && $project_slug) {
-            $page = 'company_and_project';
+            $page = 'project';
+            $title = 'Project page';
 
             // get company project
             $result = $query_project->execute();
@@ -65,6 +66,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
             }
         } else {
             $page = 'company';
+            $title = 'Company page';
 
             // get company projects
             $q = $db->prepare('SELECT * FROM project WHERE user_uid = :user_uid');
@@ -84,69 +86,71 @@ switch ($_SERVER['DOCUMENT_URI']) {
         break;
 }
 
-
-
 ?>
 
-<?php if ($page == 'home') { ?>
-    <div>
-        <h1>home page</h1>
-    </div>
-<?php }; ?>
+<!DOCTYPE html>
+<html lang="en">
 
-<?php if ($page == 'company_project_and_document') { ?>
-    <div>
-        <h1><?= $page ?></h1>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $title; ?></title>
+</head>
+
+<body>
+    <?php if ($page == 'home') { ?>
         <div>
-
-            <h2><?= $document['name'] ?></h2>
-            <h3><?= $document['slug'] ?></h3>
-            <p><?= $document['text'] ?></p>
-            <h4><?= $document['created_at'] ?></h4>
-          <?php echo json_encode($document); ?>
+            <h1>home page</h1>
         </div>
-    </div>
-<?php }; ?>
+    <?php }; ?>
 
-<?php if ($page == 'company_and_project') { ?>
-    <div>
-        <h1>company and project page</h1>
-        <h2><?= $company['name'] ?></h2>
-        <h3>Project name: <?= $project['name'] ?></h3>
+    <?php 
+        if ($page == 'document') { 
+            require_once('document.php');
+        }; 
+     ?>
 
-        <h4>Project documents:</h4>
-        <?php foreach ($documents as $document) { ?>
-            <div class="">
-                <h4><?= $document['name'] ?></h4>
-                <h5><?= $document['slug'] ?></h5>
-                <p><?= $document['created_at'] ?></p>
-                <a href="<?= $document['url'] ?>">View</a>                
-            </div>
-        <?php } ?>
+    <?php if ($page == 'project') { ?>
+        <div>
+            <h1>company and project page</h1>
+            <h2><?= $company['name'] ?></h2>
+            <h3>Project name: <?= $project['name'] ?></h3>
 
-    </div>
-<?php }; ?>
+            <h4>Project documents:</h4>
+            <?php foreach ($documents as $document) { ?>
+                <div class="">
+                    <h4><?= $document['name'] ?></h4>
+                    <h5><?= $document['slug'] ?></h5>
+                    <p><?= $document['created_at'] ?></p>
+                    <a href="<?= $document['url'] ?>">View</a>
+                </div>
+            <?php } ?>
 
-<?php if ($page == 'company') { ?>
-    <div>
-        <h1>company page</h1>
-        <p>company name: <?= $company['name'] ?></p>
-        <p>company slug: <?= $company['slug'] ?></p>
+        </div>
+    <?php }; ?>
 
-        <h1>Projects:</h1>
+    <?php if ($page == 'company') { ?>
+        <div>
+            <h1>company page</h1>
+            <p>company name: <?= $company['name'] ?></p>
+            <p>company slug: <?= $company['slug'] ?></p>
 
-        <?php foreach ($projects as $project) { ?>
-            <div>
-                <h2><?= $project['name'] ?></h2>
-                <p>project description: <?= $project['description'] ?></p>
-                <p>project slug: <?= $project['slug'] ?> </p>
-                <a href="<?= $project['url'] ?>">View</a>
-                <p>encoded slug: <?= slug($project['slug']) ?> </p>
+            <h1>Projects:</h1>
 
-            </div>
-        <?php }; ?>
+            <?php foreach ($projects as $project) { ?>
+                <div>
+                    <h2><?= $project['name'] ?></h2>
+                    <p>project description: <?= $project['description'] ?></p>
+                    <p>project slug: <?= $project['slug'] ?> </p>
+                    <a href="<?= $project['url'] ?>">View</a>
+                    <p>encoded slug: <?= slug($project['slug']) ?> </p>
 
-    </div>
-<?php }; ?>
+                </div>
+            <?php }; ?>
 
+        </div>
+    <?php }; ?>
+</body>
 
+</html>
