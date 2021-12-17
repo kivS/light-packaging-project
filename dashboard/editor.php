@@ -1,5 +1,4 @@
 <?php
-$db = new SQLite3(__DIR__ . '/db.sqlite3');
 
 // get the document from document_uid passed by GET
 $q = $db->prepare('
@@ -71,6 +70,12 @@ if (!$document) {
                 <input type="file" name="document-file" id="document-file" accept=".pdf" />
                 <button type="submit">Upload</button>
             </form>
+
+            <?php if(isset($document['file_path']) AND !empty($document['file_path'])){ ?>
+            <div>
+                <p>File loaded: <?=  $document['file_original_name']; ?></p>
+            </div>
+            <?php }; ?>
 
 
         </div>

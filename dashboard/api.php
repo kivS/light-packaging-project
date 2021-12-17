@@ -1,5 +1,5 @@
 <?php
-require('.env.php');
+require(__DIR__ . '/../.env.php');
 session_start();
 
 
@@ -8,9 +8,9 @@ if (!isset($_SESSION[SESSION_USER_UID_KEY])) {
     exit;
 }
 
-require_once('functions.php');
+require_once(__DIR__ . '/../functions.php');
 
-$db = new SQLite3(__DIR__ . '/db.sqlite3');
+$db = new SQLite3(DB_FILE);
 
 
 switch ($_SERVER['DOCUMENT_URI']) {

@@ -1,5 +1,5 @@
 <?php
-require('.env.php');
+require(__DIR__.'/../.env.php');
 session_start();
 
 if(!isset($_SESSION[SESSION_USER_UID_KEY])){
@@ -8,7 +8,7 @@ if(!isset($_SESSION[SESSION_USER_UID_KEY])){
 
 }
 
-$db = new SQLite3(__DIR__ . '/db.sqlite3');
+$db = new SQLite3(DB_FILE);
 
 // get user
 $query = $db->prepare('
@@ -60,7 +60,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title; ?></title>
-    <link rel="stylesheet" href="/assets/app.css">
+    <link rel="stylesheet" href="/assets/dashboard.css">
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 
@@ -285,9 +285,9 @@ switch ($_SERVER['DOCUMENT_URI']) {
                     </div>
                 <?php }; ?>
 
-                <?php if ($page == 'projects') include 'dashboard_projects.php'; ?>
-                <?php if ($page == 'project') include 'dashboard_project.php'; ?>
-                <?php if ($page == 'editor')  include 'document_editor.php'; ?>
+                <?php if ($page == 'projects') include 'projects.php'; ?>
+                <?php if ($page == 'project') include 'project.php'; ?>
+                <?php if ($page == 'editor')  include 'editor.php'; ?>
             </main>
         </div>
     </div>
