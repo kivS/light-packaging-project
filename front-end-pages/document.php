@@ -1,9 +1,20 @@
- <div>
-     <h1><?= $page ?></h1>
-     <div>
-         <h2><?= $document['name'] ?></h2>
-         <h3><?= $document['slug'] ?></h3>
-         <h4><?= $document['created_at'] ?></h4>
-         <?php echo json_encode($document); ?>
-     </div>
- </div>
+<?php
+
+?>
+
+
+<!-- pdf viewer -->
+<div>
+    <?php if(!empty($document['file_path'])){ ?>
+    <object data="<?= $document['file_path']; ?>" type="application/pdf" width="80%" height="100%">
+        <p>It appears you don't have a PDF plugin for this browser.
+            No biggie... you can <a href="<?= $document['file_path']; ?>">click here to
+                download the PDF file.</a>
+        </p>
+    </object>
+    <?php }else{ ?>
+    <div class="alert alert-danger">
+        <strong>Error!</strong> No document found.
+    </div>
+    <?php } ?>
+</div>

@@ -24,4 +24,7 @@ npm install --no-save --no-package-lock tailwindcss  @tailwindcss/forms
 ```bash
 # for dashboard css (dev)
 ./tailwind -c dashboard/tailwind.config.js  -i dashboard/tailwind.input.css -o public/assets/dashboard.css --watch
+
+# for front-end pages css (dev)
+./tailwind -c front-end-pages/tailwind.config.js  -i front-end-pages/tailwind.input.css -o public/assets/app.css --watch     
 ```
