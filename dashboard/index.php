@@ -1,11 +1,10 @@
 <?php
-require(__DIR__.'/../.env.php');
+require(__DIR__ . '/../.env.php');
 session_start();
 
-if(!isset($_SESSION[SESSION_USER_UID_KEY])){
-    header("Location: ".DASHBOARD_URL."/login");
+if (!isset($_SESSION[SESSION_USER_UID_KEY])) {
+    header("Location: " . DASHBOARD_URL . "/login");
     exit;
-
 }
 
 $db = new SQLite3(DB_FILE);
@@ -26,6 +25,11 @@ switch ($_SERVER['DOCUMENT_URI']) {
         $page = 'home';
         $title = 'Home';
         break;
+
+    case '/logout':
+        session_destroy();
+        header("Location: " . DASHBOARD_URL);
+        exit;
 
     case '/projects':
         // check if specific project page exists and load it
@@ -109,7 +113,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                             </svg>
                             Dashboard
                         </a>
-                        
+
                         <?php /*; 
                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md">
                             <!-- Heroicon name: outline/users -->
@@ -211,7 +215,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                             Team
                         </a>
                         */ ?>
-                        
+
                         <a href="/projects" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <!-- Heroicon name: outline/folder -->
                             <svg class="text-gray-400 group-hover:text-gray-300 mr-3 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -248,21 +252,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                     </nav>
                 </div>
                 <div class="flex-shrink-0 flex bg-gray-700 p-4">
-                    <a href="#" class="flex-shrink-0 w-full group block">
-                        <div class="flex items-center">
-                            <!-- <div>
-                                <img class="inline-block h-9 w-9 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                            </div> -->
-                            <div class="ml-3">
-                                <!-- <p class="text-sm font-medium text-white">
-                                    Tom Cook
-                                </p>
-                                <p class="text-xs font-medium text-gray-300 group-hover:text-gray-200">
-                                    View profile
-                                </p> -->
-                            </div>
-                        </div>
-                    </a>
+                    <a href="/logout" class="text-white">logout</a>
                 </div>
             </div>
         </div>

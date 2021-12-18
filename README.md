@@ -17,6 +17,7 @@
 
 - *For vscode tailwind completions only*
 ```bash
+# Install tailwindcss with all the plugins we're using
 npm install --no-save --no-package-lock tailwindcss  @tailwindcss/forms
 ```
 
