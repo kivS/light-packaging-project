@@ -84,7 +84,7 @@ if ($page == 'print-qrcode') {
     <div x-data="{ open: false }" @keydown.window.escape="open = false">
         <!-- Static sidebar for mobile -->
         <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
-        <div x-show="open" class="fixed inset-0 flex z-40 md:hidden" role="dialog" aria-modal="true">
+        <div x-show="open" x-cloak class="fixed inset-0 flex z-40 md:hidden" role="dialog" aria-modal="true">
             <!--
           Off-canvas menu overlay, show/hide based on off-canvas menu state.
         -->
