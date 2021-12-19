@@ -61,12 +61,12 @@ switch ($_SERVER['DOCUMENT_URI']) {
 
 ?>
 
-<?php 
-    if($page == 'print-qrcode'){ 
-        require_once('print-qrcode.php');
-        exit();
-    }; 
- ?>
+<?php
+if ($page == 'print-qrcode') {
+    require_once('print-qrcode.php');
+    exit();
+};
+?>
 
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-100">
@@ -82,6 +82,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
 
 <body class="h-full">
     <div x-data="{ open: false }" @keydown.window.escape="open = false">
+        <!-- Static sidebar for mobile -->
         <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
         <div x-show="open" class="fixed inset-0 flex z-40 md:hidden" role="dialog" aria-modal="true">
             <!--
@@ -110,11 +111,11 @@ switch ($_SERVER['DOCUMENT_URI']) {
 
                 <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                     <div class="flex-shrink-0 flex items-center px-4">
-                        <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg" alt="Workflow">
+                        <!-- <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg" alt="Workflow"> -->
                     </div>
                     <nav class="mt-5 px-2 space-y-1">
                         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-                        <a href="#" class="bg-gray-900 text-white group flex items-center px-2 py-2 text-base font-medium rounded-md">
+                        <a href="/" class="bg-gray-900 text-white group flex items-center px-2 py-2 text-base font-medium rounded-md">
                             <!--
                   Heroicon name: outline/home
     
@@ -136,7 +137,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
                         </a>
                         */ ?>
 
-                        <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md">
+                        <a href="/projects" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-base font-medium rounded-md">
                             <!-- Heroicon name: outline/folder -->
                             <svg class="text-gray-400 group-hover:text-gray-300 mr-4 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
@@ -172,23 +173,11 @@ switch ($_SERVER['DOCUMENT_URI']) {
 
                     </nav>
                 </div>
+
                 <div class="flex-shrink-0 flex bg-gray-700 p-4">
-                    <a href="#" class="flex-shrink-0 group block">
-                        <div class="flex items-center">
-                            <!-- <div>
-                                <img class="inline-block h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                            </div> -->
-                            <div class="ml-3">
-                                <!-- <p class="text-base font-medium text-white">
-                                    Tom Cook
-                                </p>
-                                <p class="text-sm font-medium text-gray-400 group-hover:text-gray-300">
-                                    View profile
-                                </p> -->
-                            </div>
-                        </div>
-                    </a>
+                    <a href="/logout" class="text-white">logout</a>
                 </div>
+
             </div>
 
             <div class="flex-shrink-0 w-14">
@@ -202,7 +191,7 @@ switch ($_SERVER['DOCUMENT_URI']) {
             <div class="flex-1 flex flex-col min-h-0 bg-gray-800">
                 <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
                     <div class="flex items-center flex-shrink-0 px-4">
-                        <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg" alt="Workflow">
+                        <!-- <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg" alt="Workflow"> -->
                     </div>
                     <nav class="mt-5 flex-1 px-2 space-y-1">
                         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
@@ -281,9 +270,8 @@ switch ($_SERVER['DOCUMENT_URI']) {
             </div>
             <main class="flex-1">
                 <?php if ($page == 'home') { ?>
-                    <div>
-                        <h1>home page</h1>
-                        <p>Welcome back <?= $user['name']; ?></p>
+                    <div class="text-center pt-4">
+                        <p>Welcome <?= $user['name']; ?></p>
                     </div>
                 <?php }; ?>
 
