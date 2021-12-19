@@ -48,6 +48,11 @@ switch ($_SERVER['DOCUMENT_URI']) {
         $title = "Document editor";
         break;
 
+    case '/print-qrcode':
+        $page = 'print-qrcode';
+        $title = "Print QR Code";
+        break;
+
     default:
         $page = '404';
         $title = "Page not found";
@@ -55,6 +60,13 @@ switch ($_SERVER['DOCUMENT_URI']) {
 }
 
 ?>
+
+<?php 
+    if($page == 'print-qrcode'){ 
+        require_once('print-qrcode.php');
+        exit();
+    }; 
+ ?>
 
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-100">

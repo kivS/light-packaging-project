@@ -16,7 +16,8 @@ if (!$project) {
     die('<div class="text-center p-4"> Project not found </div>');
 }
 
-$company_public_project_url = SITE_URL."/{$user['slug']}/{$project['slug']}";
+$company_public_project_url = SITE_URL . "/{$user['slug']}/{$project['slug']}";
+$print_qrcode_url = "/print-qrcode?project_uid={$project['uid']}";
 
 
 // Get the documents of this project
@@ -32,16 +33,17 @@ while ($document = $results->fetchArray(SQLITE3_ASSOC)) {
 };
 
 ?>
-<div x-data="{newDocumentModalShow: false, qrCodeSlideOverOpen: false}" class="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
+
+<div x-data="{newDocumentModalShow: false, qrCodeSlideOverOpen: true}" class="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
 
     <!-- slide-over for project creation -->
-    <div x-show="qrCodeSlideOverOpen" x-cloak class="z-10 fixed inset-0 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+    <div x-show="qrCodeSlideOverOpen" x-cloak aria-labelledby="slide-over-title" role="dialog" aria-modal="true" class="z-10 fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
             <!-- Background overlay, show/hide based on slide-over state. -->
             <div x-show="qrCodeSlideOverOpen" class="absolute inset-0" aria-hidden="true">
                 <div class="fixed inset-y-0 pl-16 max-w-full right-0 flex">
                     <!-- Slide-over panel, show/hide based on slide-over state. -->
-                    <div x-show="qrCodeSlideOverOpen" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="w-screen max-w-md">
+                    <div x-show="qrCodeSlideOverOpen" @click.outside="qrCodeSlideOverOpen = false" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="w-screen max-w-md">
                         <form action="" method="POST" @submit.prevent="" class="h-full divide-y divide-gray-200 flex flex-col bg-white shadow-xl">
                             <div class="flex-1 h-0 overflow-y-auto">
                                 <div class="py-6 px-4 bg-indigo-700 sm:px-6">
@@ -115,7 +117,12 @@ while ($document = $results->fetchArray(SQLITE3_ASSOC)) {
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex-shrink-0 px-4 py-4 flex justify-end">
+                            <div class="flex-shrink-0 px-4 py-4 flex gap-4 justify-end">
+
+                                <a href="<?= $print_qrcode_url; ?>" target="_blank" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Print
+                                </a>
+
                                 <button @click="qrCodeSlideOverOpen = false" type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     Close
                                 </button>
