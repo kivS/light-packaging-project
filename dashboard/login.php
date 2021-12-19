@@ -55,6 +55,8 @@ if (isset($_POST['email'])) {
             You can login by clicking  <a href='{$dashboard_url}/login?login_hash={$user['login_hash']}'>here</a>
         </p>
     ";
+
+    $_GET['success'] = true;
 }
 
 
@@ -73,7 +75,7 @@ if (isset($_POST['email'])) {
 
 <body class="h-full">
 
-    <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="min-h-full flex flex-col justify-start py-12 sm:px-6 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
             <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg" alt="Workflow">
             <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -91,14 +93,27 @@ if (isset($_POST['email'])) {
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                 <form class="space-y-6" action="/login" method="POST">
                     <?php if (isset($_GET['error_msg'])) { ?>
-                        <div>
-                            <p>
+                        <div class="rounded-md bg-red-50 p-4">
+                            <p class="text-sm font-medium text-red-800 text-center">
                                 <?php echo $_GET['error_msg']; ?>
                             </p>
                         </div>
                     <?php }; ?>
+
+                    <?php if (isset($_GET['success'])) { ?>
+                        <div class="rounded-md bg-green-50 p-4">
+                            <p class="text-sm font-medium text-green-800 text-center">
+                                Your login link has been sent to your email.
+                            </p>
+                        </div>
+                    <?php }; ?>
+
+                    <?php if (isset($email)) { ?>
+                        <?= $email; ?>
+                    <?php }; ?>
+
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700">
+                        <label for=" email" class="block text-sm font-medium text-gray-700">
                             Email address
                         </label>
                         <div class="mt-1">
@@ -117,13 +132,6 @@ if (isset($_POST['email'])) {
             </div>
         </div>
     </div>
-
-
-
-    <?php if (isset($email)) { ?>
-        <p>Email: <?= $email; ?></p>
-    <?php }; ?>
-
 
 </body>
 
