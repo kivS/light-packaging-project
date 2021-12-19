@@ -21,7 +21,7 @@ if (!$document) {
 
     <div>
         <nav class="sm:hidden" aria-label="Back">
-            <a href="#" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+            <a href="#" onclick="history.go(-1)" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
                 <!-- Heroicon name: solid/chevron-left -->
                 <svg class="flex-shrink-0 -ml-1 mr-1 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -65,17 +65,20 @@ if (!$document) {
                 <?php echo $document['name']; ?>
             </h2>
 
-
-            <form action="" method="post" @submit.prevent="uploadFile" enctype="multipart/form-data">
-                <input type="file" name="document-file" id="document-file" accept=".pdf" />
-                <button type="submit">Upload</button>
-            </form>
-
-            <?php if(isset($document['file_path']) AND !empty($document['file_path'])){ ?>
-            <div>
-                <p>File loaded: <?=  $document['file_original_name']; ?></p>
-            </div>
-            <?php }; ?>
+            <div class="max-w-lg">
+                <div class="mt-8 bg-gray-200 p-4 rounded-md">
+                    <form action="" method="post" @submit.prevent="uploadFile" enctype="multipart/form-data">
+                        <input type="file" name="document-file" id="document-file" accept=".pdf" />
+                        <button type="submit" class="mt-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Upload</button>
+                    </form>
+                </div>
+    
+                <?php if (isset($document['file_path']) and !empty($document['file_path'])) { ?>
+                    <div class="mt-2 bg-green-100 p-4 rounded-md text-center">
+                        <p>File loaded: <?= $document['file_original_name']; ?></p>
+                    </div>
+                <?php }; ?>
+            </div>    
 
 
         </div>
@@ -87,11 +90,16 @@ if (!$document) {
 
 
             let file = document.querySelector('input#document-file').files[0];
-            console.log(file);
+
+            if (!file) {
+                return;
+            }
 
             let formData = new FormData();
             formData.append('document-file', file);
             formData.append('document_uid', '<?= $document['uid'] ?>');
+
+            document.querySelector('form').parentElement.classList.toggle('animate-pulse');
 
 
             let response = await fetch('/api/upload-document-file', {
@@ -99,10 +107,15 @@ if (!$document) {
                 body: formData
             });
 
-            console.log(response);
-
             let json_resp = await response.json();
-            console.log(json_resp);
+
+            if (json_resp.status == 'ok') {
+                window.location.reload();
+            } else {
+                alert(json_resp.message);
+            }
+
+            document.querySelector('form').parentElement.classList.toggle('animate-pulse');
 
         }
     </script>
