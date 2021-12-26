@@ -3,7 +3,7 @@ require_once(__DIR__ . '/../.env.php');
 require_once(__DIR__ . '/../vendor/autoload.php');
 session_start();
 
-if(SENTRY_DSN){
+if(defined(SENTRY_DSN && SENTRY_DSN != '')) {
     \Sentry\init(['dsn' => SENTRY_DSN]);
 }
 
