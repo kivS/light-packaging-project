@@ -8,8 +8,6 @@ if(SENTRY_DSN) {
 
 session_start();
 
-throw new Exception("Error Processing Request");
-
 
 if (!isset($_SESSION[SESSION_USER_UID_KEY])) {
     header("Location: " . DASHBOARD_URL . "/login");
