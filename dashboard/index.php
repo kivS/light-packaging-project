@@ -1,6 +1,13 @@
 <?php
-require(__DIR__ . '/../.env.php');
+require_once(__DIR__ . '/../.env.php');
+require_once(__DIR__ . '/../vendor/autoload.php');
 session_start();
+
+if(SENTRY_DSN){
+    \Sentry\init(['dsn' => SENTRY_DSN]);
+}
+
+throw new Exception("My first Sentry error!");
 
 if (!isset($_SESSION[SESSION_USER_UID_KEY])) {
     header("Location: " . DASHBOARD_URL . "/login");
