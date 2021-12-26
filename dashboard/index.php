@@ -2,13 +2,13 @@
 require_once(__DIR__ . '/../vendor/autoload.php');
 require_once(__DIR__ . '/../.env.php');
 
-if(defined(SENTRY_DSN) && SENTRY_DSN != '') {
+if(SENTRY_DSN) {
     \Sentry\init(['dsn' => SENTRY_DSN]);
 }
 
 session_start();
 
-throw new Exception("Error Processing Request", 1);
+throw new Exception("Error Processing Request");
 
 
 if (!isset($_SESSION[SESSION_USER_UID_KEY])) {
