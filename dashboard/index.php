@@ -2,7 +2,9 @@
 require_once(__DIR__ . '/../vendor/autoload.php');
 require_once(__DIR__ . '/../.env.php');
 
-if(SENTRY_DSN) {
+use GuzzleHttp\Client as GuzzleClient;
+
+if (SENTRY_DSN) {
     \Sentry\init(['dsn' => SENTRY_DSN]);
 }
 
@@ -13,6 +15,8 @@ if (!isset($_SESSION[SESSION_USER_UID_KEY])) {
     header("Location: " . DASHBOARD_URL . "/login");
     exit;
 }
+
+
 
 $db = new SQLite3(DB_FILE);
 
@@ -32,6 +36,41 @@ switch ($_SERVER['DOCUMENT_URI']) {
         $page = 'home';
         $title = 'Home';
         break;
+
+    case '/send-feedback':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            header('Content-Type: application/json');
+
+            $email = $_POST['email'];
+            $text = $_POST['text'];
+
+            if (!$email || !$text) {
+                echo json_encode(['error' => 'email and text are required']);
+                exit();
+            }
+
+            // send http request
+            $client = new GuzzleClient();
+
+            $message = "
+User feedback for [project-light-packaging]
+Email: {$email}
+
+{$text}
+            ";
+
+            $response = $client->request('POST', 'https://api.telegram.org/bot' . TELEGRAM_BOT_TOKEN . '/sendMessage', [
+                'form_params' => [
+                    'chat_id' => TELEGRAM_MY_CHAT_ID,
+                    'text' => $message,
+                ],
+                'timeout' => 10,
+            ]);
+
+
+            echo json_encode(['success' => true]);
+            exit();
+        }
 
     case '/logout':
         session_destroy();
@@ -88,7 +127,84 @@ if ($page == 'print-qrcode') {
 </head>
 
 <body class="h-full">
-    <div x-data="{ open: false }" @keydown.window.escape="open = false">
+    <div x-data="{ open: false, feedbackModalShow: false }" @keydown.window.escape="open = false">
+
+        <!-- user feedback modal -->
+        <div x-cloak x-show="feedbackModalShow" aria-labelledby=" modal-title" role="dialog" aria-modal="true" class="fixed z-10 inset-0 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Background overlay, show/hide based on modal state. -->
+                <div x-show="feedbackModalShow" @keydown.window.escape="feedback_modalShow = false" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+                <!-- This element is to trick the browser into centering the modal contents. -->
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <!-- Modal panel, show/hide based on modal state.-->
+                <div x-show="feedbackModalShow" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-10" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+
+                    <div id="feedback-success-message" @click.outside="feedbackModalShow = false" class="hidden bg-slate-100 w-full h-full absolute left-0 top-0 flex flex-col items-center justify-center z-10 gap-4">
+                        <p class="font-bold ">Thanks for your feedback</p>
+
+                        <button @click.prevent="feedbackModalShow = false; $el.parentElement.classList.add('hidden');" type=" button" class=" justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">
+                            Close
+                        </button>
+
+                    </div>
+
+                    <form id="user-feedback" class="" action="" @submit.prevent="sendUserFeedback" method="POST">
+                        <div>
+                            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                                <!-- Heroicon name: outline/check -->
+                                <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+
+                            <div class="mt-3 text-center sm:mt-5">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                    Feedback
+                                </h3>
+                                <small class="text-gray-600">Something you want to see added or fixed?</small>
+
+                                <div class="mt-2">
+
+                                    <input type="hidden" name="email" value="<?= $user['email']; ?>">
+
+                                    <div class="mt-4">
+                                        <label for="email" class="sr-only">Email</label>
+                                        <textarea name="text" required min class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Your feedback..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                            <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm">
+                                Send
+                            </button>
+                            <button @click.prevent="feedbackModalShow = false" type=" button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">
+                                Cancel
+                            </button>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <script>
+                async function sendUserFeedback(e) {
+
+                    // send request
+                    let request = await fetch('/send-feedback', {
+                        method: 'POST',
+                        body: new FormData(e.target)
+                    });
+
+
+                    document.querySelector('#feedback-success-message').classList.remove('hidden');
+                    e.target.reset();
+
+                };
+            </script>
+        </div>
+
         <!-- Static sidebar for mobile -->
         <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
         <div x-show="open" x-cloak class="fixed inset-0 flex z-40 md:hidden" role="dialog" aria-modal="true">
@@ -214,15 +330,6 @@ if ($page == 'print-qrcode') {
                             Dashboard
                         </a>
 
-                        <?php /*; ?>
-                        <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                            <!-- Heroicon name: outline/users -->
-                            <svg class="text-gray-400 group-hover:text-gray-300 mr-3 flex-shrink-0 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                            Team
-                        </a>
-                        */ ?>
 
                         <a href="/projects" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <!-- Heroicon name: outline/folder -->
@@ -230,6 +337,13 @@ if ($page == 'print-qrcode') {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                             </svg>
                             Projects
+                        </a>
+
+                        <a href="#" @click="feedbackModalShow = true" class="text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md self-end">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="text-gray-400 group-hover:text-gray-300 mr-3 flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            Send feedback
                         </a>
 
                         <?php /* ?>
