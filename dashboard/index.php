@@ -29,6 +29,12 @@ $query->bindValue(':uid', $_SESSION[SESSION_USER_UID_KEY]);
 $result = $query->execute();
 $user = $result->fetchArray(SQLITE3_ASSOC);
 
+if (!$user) {
+    session_destroy();
+    header("Location: " . DASHBOARD_URL);
+    exit;
+}
+
 # router
 switch ($_SERVER['DOCUMENT_URI']) {
     case '/':
@@ -189,7 +195,7 @@ if ($page == 'print-qrcode') {
             </div>
             <script>
                 async function sendUserFeedback(e) {
-                    
+
                     document.querySelector('#feedback-success-message').classList.remove('hidden');
 
                     // send request
