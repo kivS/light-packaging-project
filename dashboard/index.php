@@ -189,6 +189,8 @@ if ($page == 'print-qrcode') {
             </div>
             <script>
                 async function sendUserFeedback(e) {
+                    
+                    document.querySelector('#feedback-success-message').classList.remove('hidden');
 
                     // send request
                     let request = await fetch('/send-feedback', {
@@ -197,7 +199,6 @@ if ($page == 'print-qrcode') {
                     });
 
 
-                    document.querySelector('#feedback-success-message').classList.remove('hidden');
                     e.target.reset();
 
                 };
