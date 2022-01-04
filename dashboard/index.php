@@ -17,7 +17,6 @@ if (!isset($_SESSION[SESSION_USER_UID_KEY])) {
 }
 
 
-
 $db = new SQLite3(DB_FILE);
 
 // get user

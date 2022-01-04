@@ -1,5 +1,13 @@
 <?php
+require_once(__DIR__ . '/../vendor/autoload.php');
 require(__DIR__ . '/../.env.php');
+
+use Mailgun\Mailgun;
+
+if (SENTRY_DSN) {
+    \Sentry\init(['dsn' => SENTRY_DSN]);
+}
+
 session_start();
 
 if (isset($_SESSION[SESSION_USER_UID_KEY])) {
@@ -46,11 +54,24 @@ if ($email && $name) {
 
     # create email message with login link
     $dashboard_url = DASHBOARD_URL;
-    $email = "
+    $email_html = "
     You can access the dashboard with the following by clicking <a href='{$dashboard_url}/login?login_hash={$login_hash}'>here</a>.
+    ";
+    $email_text = "
+    You can access the dashboard with the by clicking or pasting in the browser the following link: {$dashboard_url}/login?login_hash={$login_hash}
     ";
 
     $_GET['success'] = true;
+
+    $mgClient = Mailgun::create(MAILGUN_API_KEY,MAILGUN_API_ENDPOINT);
+    $params = array(
+        'from'    => MAILGUN_FROM,
+        'to'      => $email,
+        'subject' => 'Login link',
+        'html'    => $email_html,
+        'text'    => $email_text
+    );
+    $mgClient->messages()->send(MAILGUN_DOMAIN, $params);
 }
 
 
